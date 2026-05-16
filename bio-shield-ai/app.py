@@ -40,7 +40,7 @@ def click_generate_button():
 
 # Main Dashboard Title Banner
 st.title("🛡️ BioShield-AI: Biological Intrusion Detection System")
-st.markdown("### Cyber-Physical Threat Monitoring Tower (Phase 3 Enterprise Edition)")
+st.markdown("### Cyber-Physical Threat Monitoring Tower")
 
 @st.cache_resource 
 def load_ai_assets():
@@ -54,11 +54,11 @@ def load_ai_assets():
 try:
     model, word_to_idx = load_ai_assets()
 except Exception as e:
-    st.error(f"🔴 AI Assets Offline: {e}")
+    st.error(f"AI Assets Offline: {e}")
 
 # Sidebar Status Control Center (Feature 3: Border Radar)
 with st.sidebar:
-    st.header("⚡ System Perimeter Status")
+    st.header("System Perimeter Status")
     if len(st.session_state.quarantine_log) > 0 and st.session_state.quarantine_log[-1]["Verdict"] != "CLEARED":
         st.error("🚨 CONDITION: CRITICAL\nThreat Intrusion Intercepted.")
     else:
@@ -74,7 +74,7 @@ with st.sidebar:
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.subheader("🧬 Input Genomic Sequence")
+    st.subheader("Input Genomic Sequence")
     st.button("🎲 Generate Sample DNA String", on_click=click_generate_button)
     user_dna = st.text_area("Paste DNA string (A, C, G, T) here:", height=180, key="dna_input_value")
 
@@ -85,7 +85,7 @@ with col2:
 
 if scan_button:
     if len(user_dna.strip()) < 10:
-        st.warning("⚠️ Sequence too short to evaluate.")
+        st.warning("Sequence too short to evaluate.")
     else:
         with st.spinner("Executing sequence convolving filters..."):
             
@@ -127,11 +127,11 @@ if scan_button:
             # ---------------------------------------------------
 
             st.markdown("---")
-            st.subheader("🔔 Real-Time Verdict Analysis")
+            st.subheader("Real-Time Verdict Analysis")
             
             if predicted_class == 0:
                 st.balloons()
-                st.success(f"✅ **CLEARED:** Sequence matches baseline Category {predicted_class} (Harmless Vector).")
+                st.success(f"**CLEARED:** Sequence matches baseline Category {predicted_class} (Harmless Vector).")
             else:
                 st.error(f"🚨 **BIOLOGICAL ALERT FLAG Raised:** Functional indicators match threat Category **{predicted_class}**.")
                 
@@ -148,7 +148,7 @@ if scan_button:
                 st.metric(label="Screening Throughput", value=f"{throughput_speed:.1f} Kb/s")
                 
             # Charts Block
-            st.markdown("### 📊 Interactive Analysis Metrics")
+            st.markdown("### Interactive Analysis Metrics")
             chart_col1, chart_col2 = st.columns(2)
             
             with chart_col1:
@@ -181,7 +181,7 @@ if scan_button:
 
 # --- FEATURE 1 DISPLAY: SYSTEM QUARANTINE HISTORY AUDIT TRAIL ---
 st.markdown("---")
-st.subheader("📋 Autonomous System Audit Trail & Quarantine Log")
+st.subheader("Autonomous System Audit Trail & Quarantine Log")
 if len(st.session_state.quarantine_log) == 0:
     st.info("No packets processed in this session yet. Monitoring network pipeline...")
 else:
