@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd  # Added to structure our data tables for charts
 import sys
 import os
+import random  # Added to generate random DNA strings dynamically
 
 # --- CLEAN DYNAMIC PATH INTEGRATION ---
 # 1. Grab the exact absolute folder where this app.py file is running right now
@@ -52,12 +53,33 @@ try:
 except Exception as e:
     st.error(f"🔴 Failed to load AI model assets. Error: {e}")
 
+# --- HELPER FEATURE: DYNAMIC GENOMIC GENERATOR ---
+def generate_random_dna(length=120):
+    # Standard bases plus an occasional wild character to keep tests interesting!
+    bases = ['A', 'C', 'G', 'T', 'A', 'C', 'G', 'T', 'H'] 
+    return "".join(random.choice(bases) for _ in range(length))
+
+# Initialize our text box memory if it doesn't exist yet
+if "dna_input_value" not in st.session_state:
+    st.session_state.dna_input_value = "ATGCATGCATGCATGCATGC"
+
+# Callback function when the generate button is clicked
+def click_generate_button():
+    st.session_state.dna_input_value = generate_random_dna()
+# -------------------------------------------------
+
 # Create the UI Dashboard Split Screens
 col1, col2 = st.columns([2, 1])
 
 with col1:
     st.subheader("🧬 Input Genomic Sequence")
-    user_dna = st.text_area("Paste DNA string (A, C, G, T) here:", height=200, value="ATGCATGCATGCATGCATGC")
+    
+    # --- NEW FEATURE: THE GENERATE BUTTON ---
+    # Placed right above the text area for quick clicking!
+    st.button("🎲 Generate Sample DNA String", on_click=click_generate_button)
+    
+    # The text area now hooks directly into our dynamic session state memory
+    user_dna = st.text_area("Paste DNA string (A, C, G, T) here:", height=200, key="dna_input_value")
 
 with col2:
     st.subheader("📊 Screening Control Tower")
@@ -115,24 +137,21 @@ if scan_button:
             with m_col3:
                 st.metric(label="Recognized Genomic Words", value=f"{known_motifs_count} strings", delta=f"{unknown_motifs_count} mutations/unknowns", delta_color="inverse")
                 
-            # --- NEW INTERACTIVE VISUALIZATIONS SECTION ---
+            # --- INTERACTIVE VISUALIZATIONS SECTION ---
             st.markdown("### 📊 Interactive Analysis Metrics")
             chart_col1, chart_col2 = st.columns(2)
             
             with chart_col1:
                 st.write("**Feature 1: Sequence Composition Map**")
-                # Structure raw metrics into a key-value layout for the horizontal bar graph
                 composition_data = pd.DataFrame({
                     "Metric Type": ["Recognized Motifs", "Mutations/Unknowns"],
                     "Count": [known_motifs_count, unknown_motifs_count]
                 })
-                # Dynamic color change: red if flagged alert, blue if cleared harmless
                 bar_color = "#FF4B4B" if predicted_class != 0 else "#29B6F6"
                 st.bar_chart(data=composition_data, x="Metric Type", y="Count", color=bar_color, horizontal=True)
                 
             with chart_col2:
                 st.write("**Feature 2: Model Confidence Spectrum**")
-                # Isolate the top 5 alternative classes evaluated by the AI model
                 top_classes = np.argsort(probabilities)[-5:][::-1]
                 top_probs = probabilities[top_classes]
                 
@@ -147,7 +166,6 @@ if scan_button:
             with st.expander("🔎 Feature 3: Deep Packet Inspector — View Fragmented Tokens Matrix"):
                 st.write("Below is the structural matrix parsed out by our sequence feature segmenter:")
                 
-                # Map token chunks dynamically into searchable pandas spreadsheet rows
                 tokens_dataframe = pd.DataFrame({
                     "Fragment Index": range(1, len(words) + 1),
                     "Extracted 6-mer Token": words,
